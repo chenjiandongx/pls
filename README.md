@@ -19,10 +19,35 @@ $ go get -u github.com/chenjiandongx/pls
 
 ### 📏 使用
 
-```bash
+```shell
+~ 🐶 pls --help
+Impressive Linux commands cheat sheet cli.
+
+Usage:
+  pls [command]
+
+Available Commands:
+  help        Help about any command
+  show        Show the specified command usage.
+  upgrade     Upgrade all commands from remote.
+  version     Prints the version of pls
+
+Flags:
+  -h, --help   help for pls
+
+Use "pls [command] --help" for more information about a command.
 ```
 
 ### 🔖 示例
+
+> Note: 建议第一次使用的时候先初始化所有命令
+```shell
+$ pls upgrade
+```
+
+效果图
+
+![image](https://user-images.githubusercontent.com/19553554/71540604-caebdb80-2987-11ea-909c-f1f1488ef226.png)
 
 
 ### 📃 LICENSE

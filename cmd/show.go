@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -111,9 +113,18 @@ func downloadCmd(cmd string) (error, int) {
 
 	defer resp.Body.Close()
 
-	content, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err, 0
+	content := make([]byte, 0)
+	reader := bufio.NewReader(resp.Body)
+	for {
+		line, _, err := reader.ReadLine()
+		if err != nil && err != io.EOF {
+			return err, 0
+		}
+		if err == io.EOF {
+			break
+		}
+		content = append(content, line...)
+		content = append(content, []byte("\n")...)
 	}
 
 	fp := path.Join(commandPath, fmt.Sprintf("%s.md", cmd))

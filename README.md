@@ -62,6 +62,11 @@ Use "pls [command] --help" for more information about a command.
 $ pls upgrade
 ```
 
+> Tip: 可以将输出结果传入到 less 管道
+```shell
+$ pls show curl | less
+```
+
 效果图
 
 ![image](https://user-images.githubusercontent.com/19553554/71540604-caebdb80-2987-11ea-909c-f1f1488ef226.png)

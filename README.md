@@ -69,8 +69,7 @@ $ pls show curl | less
 
 效果图
 
-![image](https://user-images.githubusercontent.com/19553554/71540604-caebdb80-2987-11ea-909c-f1f1488ef226.png)
-
+![image](https://user-images.githubusercontent.com/19553554/72659887-52fe5780-3a01-11ea-89b2-dfaf9faf8dac.png)
 
 ### 📃 LICENSE
 

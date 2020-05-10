@@ -20,7 +20,7 @@ import (
 var (
 	commandDir  = ".commands"
 	commandPath = filepath.Join(getHomedir(), commandDir)
-	commandUrl  = "https://raw.githubusercontent.com/jaywcjlove/linux-command/master/command/%s.md"
+	commandUrl  = "https://unpkg.com/linux-command/command/%s.md"
 )
 
 func NewShowCommand() *cobra.Command {

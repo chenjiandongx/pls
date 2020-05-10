@@ -25,13 +25,13 @@ $ go get -u github.com/chenjiandongx/pls
 # https://github.com/chenjiandongx/pls/releases
 
 # linux
-$ wget https://github.com/chenjiandongx/pls/releases/download/v0.1.1/pls_linux_amd64
+$ wget https://github.com/chenjiandongx/pls/releases/download/v0.1.2/pls_linux_amd64
 
 # macos
-$ wget https://github.com/chenjiandongx/pls/releases/download/v0.1.1/pls_darwin_amd64
+$ wget https://github.com/chenjiandongx/pls/releases/download/v0.1.2/pls_darwin_amd64
 
 # windows
-$ wget https://github.com/chenjiandongx/pls/releases/download/v0.1.1/pls_windows_amd64.exe
+$ wget https://github.com/chenjiandongx/pls/releases/download/v0.1.2/pls_windows_amd64.exe
 ```
 
 ### 📏 使用

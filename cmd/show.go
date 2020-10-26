@@ -33,24 +33,31 @@ func NewShowCommand() *cobra.Command {
 				return
 			}
 			force, _ := cmd.Flags().GetBool("force")
-			showCmd(args[0], force)
+			dir, _ := cmd.Flags().GetString("directory")
+			showCmd(args[0], dir, force)
 		},
 	}
 	cmd.Flags().BoolP("force", "f", false, "force to refresh command usage from remote.")
+	cmd.Flags().StringP("directory", "d", "", "specify the command files directory (absolute path).")
 	return cmd
 }
 
-func showCmd(cmd string, force bool) {
+func showCmd(cmd, dir string, force bool) {
 	cmd = strings.ToLower(cmd)
-	if force {
-		retryDownloadCmd(cmd)
+	d := commandPath
+	if dir != "" {
+		d = dir
 	}
 
-	p := path.Join(getHomedir(), commandDir, fmt.Sprintf("%s.md", cmd))
+	if force {
+		retryDownloadCmd(cmd, d)
+	}
+
+	p := path.Join(d, fmt.Sprintf("%s.md", cmd))
 	if !isFileExist(p) {
-		status, err := retryDownloadCmd(cmd)
+		status, err := retryDownloadCmd(cmd, d)
 		if err != nil {
-			fmt.Printf("[sorry]: fetch command <%s> error\n", cmd)
+			fmt.Printf("[sorry]: failed to retrieve command <%s>\n", cmd)
 			return
 		}
 		if status == http.StatusNotFound {
@@ -60,7 +67,7 @@ func showCmd(cmd string, force bool) {
 	}
 	source, err := ioutil.ReadFile(p)
 	if err != nil {
-		fmt.Printf("[sorry]: open file <%s> error\n", p)
+		fmt.Printf("[sorry]: failed to open file <%s>\n", p)
 		return
 	}
 	markdown.BlueBgItalic = color.New(color.FgBlue).SprintFunc()
@@ -73,9 +80,9 @@ func getHomedir() string {
 	return home
 }
 
-func makeCmdDir() error {
-	if _, err := os.Stat(commandPath); err != nil && !os.IsExist(err) {
-		return os.Mkdir(commandPath, 0755)
+func makeCmdDir(dir string) error {
+	if _, err := os.Stat(dir); err != nil && !os.IsExist(err) {
+		return os.Mkdir(dir, 0755)
 	}
 	return nil
 }
@@ -85,11 +92,11 @@ func isFileExist(path string) bool {
 	return !os.IsNotExist(err)
 }
 
-func retryDownloadCmd(cmd string) (int, error) {
+func retryDownloadCmd(cmd, dir string) (int, error) {
 	var err error
 	var status int
 	for j := 0; j < maxRetry; j++ {
-		if err, status = downloadCmd(cmd); err != nil {
+		if err, status = downloadCmd(cmd, dir); err != nil {
 			continue
 		}
 		break
@@ -97,8 +104,13 @@ func retryDownloadCmd(cmd string) (int, error) {
 	return status, err
 }
 
-func downloadCmd(cmd string) (error, int) {
-	if err := makeCmdDir(); err != nil {
+func downloadCmd(cmd, dir string) (error, int) {
+	d := commandPath
+	if dir != "" {
+		d = dir
+	}
+
+	if err := makeCmdDir(d); err != nil {
 		return err, 0
 	}
 
@@ -127,6 +139,6 @@ func downloadCmd(cmd string) (error, int) {
 		content = append(content, []byte("\n")...)
 	}
 
-	fp := path.Join(commandPath, fmt.Sprintf("%s.md", cmd))
+	fp := path.Join(d, fmt.Sprintf("%s.md", cmd))
 	return ioutil.WriteFile(fp, content, 0666), 0
 }

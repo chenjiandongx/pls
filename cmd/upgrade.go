@@ -18,13 +18,15 @@ func NewUpgradeCommand() *cobra.Command {
 		Use:   "upgrade",
 		Short: "Upgrade all commands from remote.",
 		Run: func(cmd *cobra.Command, args []string) {
-			upgradeCmd()
+			dir, _ := cmd.Flags().GetString("directory")
+			upgradeCmd(dir)
 		},
 	}
+	cmd.Flags().StringP("directory", "d", "", "specify the command files directory (absolute path).")
 	return cmd
 }
 
-func upgradeCmd() {
+func upgradeCmd(dir string) {
 	var num int64
 	l := len(commands)
 	ch := make(chan string, 1)
@@ -35,7 +37,7 @@ func upgradeCmd() {
 		go func() {
 			defer wg.Done()
 			for cmd := range ch {
-				retryDownloadCmd(cmd)
+				retryDownloadCmd(cmd, dir)
 				atomic.AddInt64(&num, 1)
 				fmt.Printf("[busy working]: upgrade command:<%d/%d> => %s\n", atomic.LoadInt64(&num), l, cmd)
 			}

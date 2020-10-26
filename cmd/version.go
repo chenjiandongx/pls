@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	version = "pls version: [v0.1.2]"
+	version = "pls version: [v0.1.3]"
 )
 
 func NewVersionCommand() *cobra.Command {

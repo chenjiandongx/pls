@@ -15,24 +15,12 @@ Linux 是每位开发者必备的技能，如何高效地掌握 Linux 命令就�
 
 ### 🔰 安装
 
-使用 `go get` 安装 
-```shell
-$ go get -u github.com/chenjiandongx/pls
-```
+* 使用 `go get` 安装 
+    ```shell
+    $ go get -u github.com/chenjiandongx/pls
+    ```
 
-使用编译好的二进制版本
-```shell
-# https://github.com/chenjiandongx/pls/releases
-
-# linux
-$ wget https://github.com/chenjiandongx/pls/releases/download/v0.1.2/pls_linux_amd64
-
-# macos
-$ wget https://github.com/chenjiandongx/pls/releases/download/v0.1.2/pls_darwin_amd64
-
-# windows
-$ wget https://github.com/chenjiandongx/pls/releases/download/v0.1.2/pls_windows_amd64.exe
-```
+* 使用编译好的二进制版本: [releases](https://github.com/chenjiandongx/pls/releases)
 
 ### 📏 使用
 
@@ -57,7 +45,7 @@ Use "pls [command] --help" for more information about a command.
 
 ### 🔖 示例
 
-> Note: 建议第一次使用的时候先初始化所有命令
+> Note: 建议第一次使用的时候先初始化所有命令，可以使用 -d 指定命令文档文件夹下载位置
 ```shell
 $ pls upgrade
 ```

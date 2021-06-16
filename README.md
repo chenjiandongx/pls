@@ -1,11 +1,9 @@
 
-# 📝 pls
+# pls
 
-> Impressive Linux commands cheat sheet cli.
+> Impressive Linux commands cheat sheet cli. [Python 版本](https://github.com/chenjiandongx/how)
 
-* Python 版本: [chenjiandongx/how](https://github.com/chenjiandongx/how)
-
-### 安装
+### Installation
 
 * 使用 `go get` 安装 
     ```shell
@@ -14,7 +12,7 @@
 
 * 使用编译好的二进制版本: [releases](https://github.com/chenjiandongx/pls/releases)
 
-### 📏 使用
+### Usages
 
 ```shell
 ~ 🐶 pls --help
@@ -36,7 +34,7 @@ Flags:
 Use "pls [command] --help" for more information about a command.
 ```
 
-### 示例
+### Examples
 
 > Note: 建议第一次使用的时候先初始化所有命令，可以使用 -d 指定命令文档文件夹下载位置
 ```shell
@@ -50,7 +48,7 @@ $ pls show curl | less
 
 效果图
 
-![](https://user-images.githubusercontent.com/19553554/72659887-52fe5780-3a01-11ea-89b2-dfaf9faf8dac.png)
+![](https://user-images.githubusercontent.com/19553554/122259619-f1e3f780-cf04-11eb-949e-763d82a4e3b9.png)
 ![](https://user-images.githubusercontent.com/19553554/122258451-a0873880-cf03-11eb-865f-067416787cb7.png)
 
 

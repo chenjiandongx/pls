@@ -163,6 +163,10 @@ func downloadCmd(cmd string) error {
 		return err
 	}
 
+	if err := makeCmdDir(c.Dir); err != nil {
+		return err
+	}
+
 	resp, err := http.Get(fmt.Sprintf(commandUrl, cmd))
 	if err != nil {
 		return err

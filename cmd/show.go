@@ -17,7 +17,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
-
 )
 
 const (
@@ -113,6 +112,10 @@ func isFileExist(path string) bool {
 }
 
 func genConfigFile() error {
+	if err := makeCmdDir(commandPath); err != nil {
+		return err
+	}
+
 	if !isFileExist(configPath) {
 		bs, _ := json.Marshal(defaultCfg)
 		return ioutil.WriteFile(configPath, bs, 0666)
@@ -155,10 +158,6 @@ func retryDownloadCmd(cmd string) error {
 }
 
 func downloadCmd(cmd string) error {
-	if err := makeCmdDir(commandPath); err != nil {
-		return err
-	}
-
 	c, err := getConfigContent()
 	if err != nil {
 		return err

@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"bufio"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -15,12 +17,23 @@ import (
 	"github.com/fatih/color"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+
 )
 
+const (
+	commandDir = ".commands"
+	commandCfg = "config.json"
+	commandUrl = "https://unpkg.com/linux-command@1.6.1/command/%s.md"
+)
+
+type config struct {
+	Dir string `json:"dir"`
+}
+
 var (
-	commandDir  = ".commands"
 	commandPath = filepath.Join(getHomedir(), commandDir)
-	commandUrl  = "https://unpkg.com/linux-command/command/%s.md"
+	configPath  = filepath.Join(getHomedir(), commandDir, commandCfg)
+	defaultCfg  = config{Dir: commandPath}
 )
 
 func NewShowCommand() *cobra.Command {
@@ -33,38 +46,45 @@ func NewShowCommand() *cobra.Command {
 				return
 			}
 			force, _ := cmd.Flags().GetBool("force")
-			dir, _ := cmd.Flags().GetString("directory")
-			showCmd(args[0], dir, force)
+			showCmd(args[0], force)
 		},
 	}
 	cmd.Flags().BoolP("force", "f", false, "force to refresh command usage from remote.")
-	cmd.Flags().StringP("directory", "d", "", "specify the command files directory (absolute path).")
 	return cmd
 }
 
-func showCmd(cmd, dir string, force bool) {
+func showCmd(cmd string, force bool) {
 	cmd = strings.ToLower(cmd)
-	d := commandPath
-	if dir != "" {
-		d = dir
-	}
 
 	if force {
-		retryDownloadCmd(cmd, d)
+		if err := retryDownloadCmd(cmd); err != nil {
+			if err == ErrCommandNotFound {
+				fmt.Printf("[sorry]: could not found command <%s>\n", cmd)
+				return
+			}
+			fmt.Printf("[sorry]: failed to download command <%s>\n", cmd)
+		}
 	}
 
-	p := path.Join(d, fmt.Sprintf("%s.md", cmd))
+	cfg, err := getConfigContent()
+	if err != nil {
+		fmt.Println("[sorry]: failed to get config content")
+		return
+	}
+
+	p := path.Join(cfg.Dir, fmt.Sprintf("%s.md", cmd))
 	if !isFileExist(p) {
-		status, err := retryDownloadCmd(cmd, d)
+		err := retryDownloadCmd(cmd)
 		if err != nil {
 			fmt.Printf("[sorry]: failed to retrieve command <%s>\n", cmd)
 			return
 		}
-		if status == http.StatusNotFound {
+		if err == ErrCommandNotFound {
 			fmt.Printf("[sorry]: could not found command <%s>\n", cmd)
 			return
 		}
 	}
+
 	source, err := ioutil.ReadFile(p)
 	if err != nil {
 		fmt.Printf("[sorry]: failed to open file <%s>\n", p)
@@ -92,35 +112,65 @@ func isFileExist(path string) bool {
 	return !os.IsNotExist(err)
 }
 
-func retryDownloadCmd(cmd, dir string) (int, error) {
-	var err error
-	var status int
+func genConfigFile() error {
+	if !isFileExist(configPath) {
+		bs, _ := json.Marshal(defaultCfg)
+		return ioutil.WriteFile(configPath, bs, 0666)
+	}
+
+	return nil
+}
+
+func getConfigContent() (*config, error) {
+	if err := genConfigFile(); err != nil {
+		return nil, err
+	}
+
+	bs, err := ioutil.ReadFile(configPath)
+	if err != nil {
+		return nil, err
+	}
+
+	cfgpath := config{}
+	if err := json.Unmarshal(bs, &cfgpath); err != nil {
+		return nil, err
+	}
+
+	return &cfgpath, nil
+}
+
+var (
+	ErrCommandNotFound = errors.New("command not found")
+)
+
+func retryDownloadCmd(cmd string) error {
 	for j := 0; j < maxRetry; j++ {
-		if err, status = downloadCmd(cmd, dir); err != nil {
+		if err := downloadCmd(cmd); err != nil {
 			continue
 		}
 		break
 	}
-	return status, err
+
+	return nil
 }
 
-func downloadCmd(cmd, dir string) (error, int) {
-	d := commandPath
-	if dir != "" {
-		d = dir
+func downloadCmd(cmd string) error {
+	if err := makeCmdDir(commandPath); err != nil {
+		return err
 	}
 
-	if err := makeCmdDir(d); err != nil {
-		return err, 0
+	c, err := getConfigContent()
+	if err != nil {
+		return err
 	}
 
 	resp, err := http.Get(fmt.Sprintf(commandUrl, cmd))
 	if err != nil {
-		return err, 0
+		return err
 	}
 
 	if resp.StatusCode == http.StatusNotFound {
-		return nil, http.StatusNotFound
+		return ErrCommandNotFound
 	}
 
 	defer resp.Body.Close()
@@ -130,7 +180,7 @@ func downloadCmd(cmd, dir string) (error, int) {
 	for {
 		line, _, err := reader.ReadLine()
 		if err != nil && err != io.EOF {
-			return err, 0
+			return err
 		}
 		if err == io.EOF {
 			break
@@ -139,6 +189,6 @@ func downloadCmd(cmd, dir string) (error, int) {
 		content = append(content, []byte("\n")...)
 	}
 
-	fp := path.Join(d, fmt.Sprintf("%s.md", cmd))
-	return ioutil.WriteFile(fp, content, 0666), 0
+	fp := path.Join(c.Dir, fmt.Sprintf("%s.md", cmd))
+	return ioutil.WriteFile(fp, content, 0666)
 }

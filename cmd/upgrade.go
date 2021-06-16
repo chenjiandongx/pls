@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	maxCurrency = 8
-	maxRetry    = 5
+	maxCurrency = 6
+	maxRetry    = 3
 )
 
 func NewUpgradeCommand() *cobra.Command {
@@ -18,18 +18,18 @@ func NewUpgradeCommand() *cobra.Command {
 		Use:   "upgrade",
 		Short: "Upgrade all commands from remote.",
 		Run: func(cmd *cobra.Command, args []string) {
-			dir, _ := cmd.Flags().GetString("directory")
-			upgradeCmd(dir)
+			upgradeCmd()
 		},
 	}
-	cmd.Flags().StringP("directory", "d", "", "specify the command files directory (absolute path).")
+
 	return cmd
 }
 
-func upgradeCmd(dir string) {
-	var num int64
+func upgradeCmd() {
+	var num, failed int64
 	l := len(commands)
-	ch := make(chan string, 1)
+
+	ch := make(chan string, 2)
 	wg := sync.WaitGroup{}
 
 	for i := 0; i < maxCurrency; i++ {
@@ -37,7 +37,10 @@ func upgradeCmd(dir string) {
 		go func() {
 			defer wg.Done()
 			for cmd := range ch {
-				retryDownloadCmd(cmd, dir)
+				if err := retryDownloadCmd(cmd); err != nil {
+					atomic.AddInt64(&failed, 1)
+				}
+
 				atomic.AddInt64(&num, 1)
 				fmt.Printf("[busy working]: upgrade command:<%d/%d> => %s\n", atomic.LoadInt64(&num), l, cmd)
 			}
@@ -49,5 +52,5 @@ func upgradeCmd(dir string) {
 	}
 	close(ch)
 	wg.Wait()
-	fmt.Println("[clap]: all commands are upgraded.")
+	fmt.Printf("[clap]: all commands are upgraded. All: %d, Failed: %d", num, failed)
 }

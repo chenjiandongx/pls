@@ -5,12 +5,15 @@
 
 ### Installation
 
-* 使用 `go get` 安装 
-    ```shell
-    $ go get -u github.com/chenjiandongx/pls
-    ```
+#### 1) 使用 `go get` 安装 
 
-* 使用编译好的二进制版本: [releases](https://github.com/chenjiandongx/pls/releases)
+```shell
+$ go get -u github.com/chenjiandongx/pls
+```
+
+#### 2) 使用编译好的二进制版本
+
+https://github.com/chenjiandongx/pls/releases
 
 ### Usages
 
@@ -34,16 +37,21 @@ Flags:
 Use "pls [command] --help" for more information about a command.
 ```
 
-### Examples
-
-> Note: 建议第一次使用的时候先初始化所有命令，可以使用 -d 指定命令文档文件夹下载位置
+建议第一次使用的时候先初始化所有命令
 ```shell
-$ pls upgrade
+$ 🐶 pls upgrade
 ```
 
-> Tip: 可以将输出结果传入到 less 管道
+配置文件位于 `~/.commands/config/json` 可以更改命令文件下载目录
+
 ```shell
-$ pls show curl | less
+❯ 🐶 cat ~/.commands/config.json
+{"dir":"/Users/chenjiandongx/.commands"}
+```
+
+可以将输出结果传入到 less 管道
+```shell
+$ 🐶 pls show curl | less
 ```
 
 效果图

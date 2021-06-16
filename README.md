@@ -33,6 +33,7 @@ Usage:
 
 Available Commands:
   help        Help about any command
+  search      Search command
   show        Show the specified command usage.
   upgrade     Upgrade all commands from remote.
   version     Prints the version of pls
@@ -58,6 +59,34 @@ $ pls show curl | less
 效果图
 
 ![image](https://user-images.githubusercontent.com/19553554/72659887-52fe5780-3a01-11ea-89b2-dfaf9faf8dac.png)
+
+
+#### 辅助脚本
+
+写一个脚本, source到环境中. 方便指定文件目录.
+
+```shell
+_cman() {
+    pls show -d ~/command $1 | less
+}
+_cmans() {
+    pls search -d ~/command $1
+}
+
+alias ,cman=_cman
+alias ,cmans=_cmans
+```
+
+> Tip: 搜索和展示使用
+
+```shell
+# 展示
+,cman sort
+
+# 搜索
+,cmans 排序
+```
+
 
 ### 📃 LICENSE
 

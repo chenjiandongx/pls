@@ -42,7 +42,7 @@ Use "pls [command] --help" for more information about a command.
 $ 🐶 pls upgrade
 ```
 
-配置文件位于 `~/.commands/config/json` 可以更改命令文件下载目录
+配置文件位于 `~/.commands/config.json` 可以更改命令文件下载目录
 
 ```shell
 ❯ 🐶 cat ~/.commands/config.json
